@@ -14,14 +14,62 @@ const puerto = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- CONFIGURACIÓN DE POSTGRESQL (SEGURA) ---
+// --- CONFIGURACIÓN DE POSTGRESQL (SEGURA Y EN LA NUBE) ---
 const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
+    // --- NUEVO: OBLIGAMOS A USAR CONEXIÓN ENCRIPTADA (SSL) ---
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
+
+// ==========================================
+// --- INICIALIZACIÓN DE BASE DE DATOS ---
+// ==========================================
+pool.query('SELECT NOW()')
+    .then(async () => {
+        console.log("✅ ¡Conectado a la base de datos Neon en la nube!");
+        
+        // 1. Creamos las tablas si no existen
+        await pool.query(`CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY,
+            usuario TEXT UNIQUE,
+            password TEXT,
+            rol TEXT
+        )`);
+
+        await pool.query(`CREATE TABLE IF NOT EXISTS tareas (
+            id SERIAL PRIMARY KEY,
+            usuario TEXT,
+            descripcion TEXT,
+            fecharegistro TEXT,
+            fechavencimiento TEXT,
+            fechamodificacion TEXT, 
+            fechatermino TEXT,      
+            estado TEXT
+        )`);
+
+        // 2. Revisamos si la base de datos está vacía (Problema del huevo y la gallina)
+        const { rows } = await pool.query('SELECT COUNT(*) FROM usuarios');
+        if (parseInt(rows[0].count) === 0) {
+            console.log("⚠️ Base de datos vacía. Creando Administrador Maestro...");
+            
+            // Hasheamos una contraseña temporal: "admin123"
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            
+            await pool.query(
+                `INSERT INTO usuarios (usuario, password, rol) VALUES ($1, $2, $3)`, 
+                ['admin', hashedPassword, 'admin']
+            );
+            console.log("⭐ ¡Usuario 'admin' creado con la contraseña temporal 'admin123'!");
+        }
+    })
+    .catch(err => console.error("❌ Error al inicializar Postgres:", err));
+
 
 // ==========================================
 // --- MIDDLEWARE DE SEGURIDAD (EL CADENERO) ---
