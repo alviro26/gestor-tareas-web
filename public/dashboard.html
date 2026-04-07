@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>Gestor de Tareas Profesional</title>
+</head>
+<body class="dashboard-body">
+
+<div class="contenedor contenedor-dashboard">
+    <div class="header">
+        <h2>Mis Tareas</h2>
+        <div class="acciones-header">
+            <span>Bienvenido, <strong>Usuario</strong></span>
+            <button id="btnExportar" class="btn-verde espaciado-izq">Exportar a Excel</button>
+            <button id="btnCerrarSesion" class="btn-rojo espaciado-izq">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="formulario-tarea">
+        <input type="text" id="descTarea" placeholder="Descripción de la nueva tarea..." class="input-expandible">
+        <input type="date" id="fechaVencimiento" title="Fecha de Vencimiento" class="input-fecha">
+        <button id="btnAgregar" class="btn-azul">Registrar Tarea</button>
+    </div>
+    
+    <div class="mb-20">
+        <input type="text" id="buscadorTexto" placeholder="🔍 Buscar por palabra (ej. EVALUACION, pedimento...)" class="input-buscador">
+    </div>
+    
+    <div class="barra-herramientas">
+        <label class="label-bold">Ordenar lista por:</label>
+        <select id="ordenTareas" onchange="renderizarTareas()" class="select-orden">
+            <option value="defecto">Orden de Registro (Predeterminado)</option>
+            <option value="proximas">Próximas a vencer primero (Urgentes)</option>
+            <option value="lejanas">Más tiempo restante primero</option>
+        </select>
+    </div>
+    
+    <div class="filtros">
+        <strong>Filtros:</strong>
+        <button class="btn-gris">Todas</button>
+        <button class="btn-amarillo">Pendientes</button>
+        <button class="btn-azul">En Proceso</button>
+        <button class="btn-verde">Completadas</button>
+        <button class="btn-rojo">Desfasadas</button>
+    </div>
+    
+    <div class="panel-filtros-agenda">
+        <h3 class="titulo-panel">Filtros de Agenda</h3>
+        <div class="flex-agenda">
+            <div>
+                <label class="label-agenda">Buscar día específico:</label>
+                <input type="date" id="filtroDia" class="input-agenda">
+                <button onclick="buscarPorDia()" class="btn-azul btn-sm espaciado-izq">Ver Día</button>
+            </div>
+            <div class="separador-vertical">
+                <label class="label-agenda">Ver Calendario Mensual:</label>
+                <input type="month" id="filtroMes" class="input-agenda">
+                <button onclick="generarCalendario()" class="btn-morado btn-sm espaciado-izq">Dibujar Calendario</button>
+            </div>
+        </div>
+        <div id="contenedorCalendario" class="mt-20" style="display: none;"></div>
+    </div>
+
+    <div id="modalAgenda" class="modal-overlay" style="display: none;">
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h3 id="tituloModal" class="modal-titulo-naranja">Tareas del Día</h3>
+                <button onclick="cerrarModal()" class="btn-cerrar-modal">&times;</button>
+            </div>
+            <div id="contenidoModal" class="modal-body"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modalEditar" class="modal-overlay" style="display: none; z-index: 10000;">
+    <div class="modal-content modal-sm">
+        <h3 class="titulo-panel" style="color: #2980b9;">Editar Tarea</h3>
+        
+        <input type="hidden" id="editIdTarea">
+        
+        <label class="label-form">Descripción:</label>
+        <input type="text" id="editDescTarea" class="input-form-modal">
+        
+        <label class="label-form">Fecha de Vencimiento:</label>
+        <input type="date" id="editFechaVencimiento" class="input-form-modal input-mb-20">
+        
+        <div class="modal-acciones">
+            <button onclick="cerrarModalEditar()" class="btn-gris">Cancelar</button>
+            <button onclick="guardarEdicionTarea()" class="btn-verde">Guardar Cambios</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</body>
+</html>

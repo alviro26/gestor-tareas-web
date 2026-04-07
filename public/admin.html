@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>Panel de Administración</title>
+</head>
+<body>
+
+<div class="contenedor">
+    <div class="header">
+        <h2>Panel de Control - Administrador</h2>
+        <div class="acciones-header">
+            <button class="btn-azul" onclick="window.location.href='dashboard.html'">Ir a Mis Tareas</button>
+            <button class="btn-rojo espaciado-izq" id="btnCerrarSesion">Cerrar Sesión</button>
+        </div>
+    </div>
+
+   <h3>Gestión de Usuarios</h3>
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaUsuarios">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel-secundario">
+        <h4 class="titulo-panel">Crear Nuevo Usuario</h4>
+        <div class="formulario-en-linea">
+            <input type="text" id="nuevoUsuario" placeholder="Nombre de usuario" class="input-form">
+            <input type="password" id="nuevoPassword" placeholder="Contraseña" class="input-form">
+            <select id="nuevoRol" class="select-form">
+                <option value="usuario_estandar">Usuario Estándar</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button class="btn-azul" id="btnCrearUsuario">Registrar</button>
+        </div>
+    </div>
+
+    <hr class="separador">
+
+    <h3>Supervisión General de Tareas</h3>
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Propietario</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Vencimiento</th>
+                    <th>Última Modificación</th>
+                    <th>Fecha Término</th>
+                </tr>
+            </thead>
+            <tbody id="tablaTareas">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
