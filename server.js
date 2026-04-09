@@ -157,12 +157,19 @@ app.get('/api/tareas/:usuario', verificarToken, async (req, res) => {
 
 // Crear nueva tarea
 app.post('/api/tareas', verificarToken, async (req, res) => {
-    const { usuario, descripcion, fechaRegistro, fechaVencimiento, estado } = req.body;
+    // 1. Atrapamos horarecordatorio del frontend
+    const { usuario, descripcion, fechaRegistro, fechaVencimiento, estado, horarecordatorio } = req.body;
+    
     try {
-        const sql = 'INSERT INTO tareas (usuario, descripcion, fechaRegistro, fechaVencimiento, estado) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-        const result = await pool.query(sql, [usuario, descripcion, fechaRegistro, fechaVencimiento, estado]);
+        // 2. Agregamos la columna y el espacio $6 en la base de datos
+        const sql = 'INSERT INTO tareas (usuario, descripcion, fechaRegistro, fechaVencimiento, estado, horarecordatorio) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id';
+        
+        // 3. Mandamos la variable escrita correctamente
+        const result = await pool.query(sql, [usuario, descripcion, fechaRegistro, fechaVencimiento, estado, horarecordatorio]);
+        
         res.status(201).json({ mensaje: 'Tarea registrada', id: result.rows[0].id });
     } catch (error) {
+        console.error(error); // Agregamos esto para que si falla, la consola te diga por qué
         res.status(500).json({ error: 'Error al guardar tarea.' });
     }
 });
