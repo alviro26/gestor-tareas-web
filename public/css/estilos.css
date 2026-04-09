@@ -246,3 +246,101 @@ tr:hover { background-color: #f1f2f6; }
         width: 100%;
     }
 }
+
+/* =========================================
+   NUEVO DISEÑO: FORMULARIO CON ALARMA
+   ========================================= */
+
+/* Contenedor general: separa la creación de la tarea y las opciones */
+.formulario-tarea-ext {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e1e4e8;
+    margin-bottom: 25px;
+}
+
+/* Fila superior: Input de texto, fecha y botón */
+.fila-principal {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Fila inferior: Área de la notificación */
+.fila-opciones {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+/* Estilo para el input del reloj */
+.input-reloj {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-reloj:focus {
+    border-color: #3498db;
+}
+
+/* =========================================
+   MAGIA CSS: EL INTERRUPTOR (TOGGLE SWITCH)
+   ========================================= */
+.switch-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+    font-weight: 500;
+}
+
+/* Ocultamos la caja tradicional y dibujamos el carril gris */
+.switch-container input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 38px;
+    height: 22px;
+    background: #ccc;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    margin: 0 10px 0 0;
+    transition: background 0.3s ease;
+}
+
+/* Dibujamos el círculo blanco del interruptor */
+.switch-container input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Efecto cuando se activa: color azul y círculo a la derecha */
+.switch-container input[type="checkbox"]:checked {
+    background: #3498db; 
+}
+
+.switch-container input[type="checkbox"]:checked::after {
+    left: 19px;
+}

@@ -18,12 +18,24 @@
         </div>
     </div>
 
-    <div class="formulario-tarea">
-        <input type="text" id="descTarea" placeholder="Descripción de la nueva tarea..." class="input-expandible">
-        <input type="date" id="fechaVencimiento" title="Fecha de Vencimiento" class="input-fecha">
+    <div class="formulario-tarea-ext">
+    <div class="fila-principal">
+        <input type="text" id="descTarea" placeholder="¿Qué hay que hacer?" class="input-expandible">
+        <input type="date" id="fechaVencimiento" class="input-fecha">
         <button id="btnAgregar" class="btn-azul">Registrar Tarea</button>
     </div>
     
+    <div class="fila-opciones">
+        <label class="switch-container">
+            <input type="checkbox" id="activarRecordatorio" onchange="toggleReloj()"> 
+            <span>¿Deseas recibir notificación?</span>
+        </label>
+        
+        <div id="contenedorReloj" style="display: none; margin-left: 15px;">
+            <input type="time" id="horaRecordatorio" class="input-reloj">
+        </div>
+    </div>
+</div>    
     <div class="mb-20">
         <input type="text" id="buscadorTexto" placeholder="🔍 Buscar por palabra (ej. EVALUACION, pedimento...)" class="input-buscador">
     </div>

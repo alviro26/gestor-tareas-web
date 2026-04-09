@@ -225,6 +225,17 @@ document.getElementById('btnAgregar').addEventListener('click', async function()
     const descripcion = document.getElementById('descTarea').value.trim();
     const fechaVencimiento = document.getElementById('fechaVencimiento').value;
 
+    // Dentro de tu función de registrar tarea:
+    const descripcion = document.getElementById('descTarea').value;
+    const fechaVence = document.getElementById('fechaVencimiento').value;
+    const recordatorioActivo = document.getElementById('activarRecordatorio').checked;
+    let horaFinal = null;
+
+    if (recordatorioActivo) {
+        horaFinal = document.getElementById('horaRecordatorio').value;
+    }
+    // Ese 'horaFinal' es el que envías al servidor (será un string como "09:40" o null)
+
     if (descripcion === "" || fechaVencimiento === "") return alert("Faltan datos.");
 
     const hoy = new Date();
@@ -478,4 +489,35 @@ async function guardarEdicionTarea() {
     } catch (error) {
         console.error("Error de red:", error);
     }
+}
+
+function toggleReloj() {
+    const checkbox = document.getElementById('activarRecordatorio');
+    const contenedor = document.getElementById('contenedorReloj');
+    contenedor.style.display = checkbox.checked ? 'inline-block' : 'none';
+}
+
+function lanzarNotificacion(tarea) {
+    const notif = new Notification("⏰ Tarea Pendiente", {
+        body: tarea.descripcion,
+        requireInteraction: true // Mantiene la notificación visible hasta que el usuario interactúe
+    });
+
+    notif.onclick = () => {
+        // Al hacer clic, preguntamos si desea posponer
+        const respuesta = confirm(`Tarea: ${tarea.descripcion}\n\n¿Deseas posponerla 10 minutos?`);
+        
+        if (respuesta) {
+            // Calculamos 10 minutos más
+            const ahora = new Date();
+            ahora.setMinutes(ahora.getMinutes() + 10);
+            
+            const nuevaHora = ahora.getHours().toString().padStart(2, '0') + ":" + 
+                              ahora.getMinutes().toString().padStart(2, '0');
+            
+            // Actualizamos la hora solo en la memoria para que vuelva a sonar
+            tarea.horarecordatorio = nuevaHora;
+            alert("Recordatorio pospuesto por 10 minutos.");
+        }
+    };
 }
