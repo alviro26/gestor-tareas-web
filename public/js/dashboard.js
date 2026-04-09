@@ -17,29 +17,23 @@ const contenedorTareas = document.getElementById('listaTareas');
 
 // --- 3. FUNCIONES DE FECHAS ---
 function calcularDiasRestantes(fechaVencimientoStr) {
-    const fechaVence = new Date(fechaVencimientoStr);
+    if (!fechaVencimientoStr) return 0;
+    
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0); 
 
-    // 2. Extraemos la fecha de la tarea con cuidado para evitar errores de zona horaria
-    const partesFecha = tarea.fechavencimiento.split('-'); // Separa "2026-04-09"
-    // Nota: En JS los meses empiezan en 0, por eso restamos 1 al mes
+    const partesFecha = fechaVencimientoStr.split('-'); 
     const fechaVence = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
-    fechaVence.setHours(0, 0, 0, 0); // También la dejamos en 00:00:00
+    fechaVence.setHours(0, 0, 0, 0);
 
-    // 3. Ahora sí, hacemos la comparación exacta
-    let estadoVisual = tarea.estado;
+    const diferenciaTiempo = fechaVence.getTime() - hoy.getTime();
+    return Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
+}
 
-    if (estadoVisual !== 'Completada') {
-        if (fechaVence < hoy) {
-            // La tarea SÍ está desfasada (ya es 10 de abril o posterior)
-            estadoVisual = 'Desfasada';
-        } else if (fechaVence.getTime() === hoy.getTime()) {
-            // La tarea VENCE HOY (puedes dejarla como 'Pendiente' o crear una alerta visual nueva)
-            estadoVisual = 'Vence Hoy'; 
-        }
-    }
-    
+function formatearFecha(fechaStr) {
+    if (!fechaStr) return "";
+    const partes = fechaStr.split('-');
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
 function formatearFecha(fechaStr) {
@@ -224,17 +218,13 @@ function renderizarTareas() {
 document.getElementById('btnAgregar').addEventListener('click', async function() {
     const descripcion = document.getElementById('descTarea').value.trim();
     const fechaVencimiento = document.getElementById('fechaVencimiento').value;
-
-    // Dentro de tu función de registrar tarea:
-    const descripcion = document.getElementById('descTarea').value;
-    const fechaVence = document.getElementById('fechaVencimiento').value;
+    
     const recordatorioActivo = document.getElementById('activarRecordatorio').checked;
     let horaFinal = null;
 
     if (recordatorioActivo) {
         horaFinal = document.getElementById('horaRecordatorio').value;
     }
-    // Ese 'horaFinal' es el que envías al servidor (será un string como "09:40" o null)
 
     if (descripcion === "" || fechaVencimiento === "") return alert("Faltan datos.");
 
@@ -245,6 +235,7 @@ document.getElementById('btnAgregar').addEventListener('click', async function()
         descripcion: descripcion,
         fechaRegistro: hoy.toISOString().split('T')[0],
         fechaVencimiento: fechaVencimiento,
+        horarecordatorio: horaFinal, // <-- AQUÍ SE ENVÍA LA HORA AL SERVIDOR
         estado: "Pendiente" 
     };
 
@@ -253,7 +244,7 @@ document.getElementById('btnAgregar').addEventListener('click', async function()
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${tokenGuardado}` // <-- MOSTRAMOS EL GAFETE
+                'Authorization': `Bearer ${tokenGuardado}`
             },
             body: JSON.stringify(nuevaTarea)
         });
@@ -261,6 +252,8 @@ document.getElementById('btnAgregar').addEventListener('click', async function()
         if (respuesta.ok) {
             document.getElementById('descTarea').value = "";
             document.getElementById('fechaVencimiento').value = "";
+            document.getElementById('activarRecordatorio').checked = false; // Apagamos el switch
+            document.getElementById('contenedorReloj').style.display = 'none'; // Ocultamos el reloj
             cargarTareas(); 
         }
     } catch (error) {
@@ -521,3 +514,24 @@ function lanzarNotificacion(tarea) {
         }
     };
 }
+
+// ==========================================
+// --- NUEVO: EL VIGILANTE DE NOTIFICACIONES ---
+// ==========================================
+if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+setInterval(() => {
+    const ahora = new Date();
+    const horaActual = ahora.getHours().toString().padStart(2, '0') + ":" + 
+                       ahora.getMinutes().toString().padStart(2, '0');
+    
+    misTareas.forEach(tarea => {
+        if (tarea.estado !== 'Completada' && tarea.horarecordatorio === horaActual) {
+            lanzarNotificacion(tarea);
+            // Borramos la hora de la memoria para que no suene 60 veces en ese mismo minuto
+            tarea.horarecordatorio = null; 
+        }
+    });
+}, 60000);
