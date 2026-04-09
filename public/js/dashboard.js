@@ -20,8 +20,26 @@ function calcularDiasRestantes(fechaVencimientoStr) {
     const fechaVence = new Date(fechaVencimientoStr);
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0); 
-    fechaVence.setHours(0, 0, 0, 0);
-    return Math.ceil((fechaVence.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)); 
+
+    // 2. Extraemos la fecha de la tarea con cuidado para evitar errores de zona horaria
+    const partesFecha = tarea.fechavencimiento.split('-'); // Separa "2026-04-09"
+    // Nota: En JS los meses empiezan en 0, por eso restamos 1 al mes
+    const fechaVence = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
+    fechaVence.setHours(0, 0, 0, 0); // También la dejamos en 00:00:00
+
+    // 3. Ahora sí, hacemos la comparación exacta
+    let estadoVisual = tarea.estado;
+
+    if (estadoVisual !== 'Completada') {
+        if (fechaVence < hoy) {
+            // La tarea SÍ está desfasada (ya es 10 de abril o posterior)
+            estadoVisual = 'Desfasada';
+        } else if (fechaVence.getTime() === hoy.getTime()) {
+            // La tarea VENCE HOY (puedes dejarla como 'Pendiente' o crear una alerta visual nueva)
+            estadoVisual = 'Vence Hoy'; 
+        }
+    }
+    
 }
 
 function formatearFecha(fechaStr) {
