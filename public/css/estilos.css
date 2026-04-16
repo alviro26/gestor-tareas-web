@@ -1,3 +1,10 @@
+/*Regla universal para que los bordes no empujen el diseño*/
+input, select, textarea {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+
 /* =========================================
    ESTILOS GENERALES Y LAYOUT
    ========================================= */
@@ -343,4 +350,19 @@ tr:hover { background-color: #f1f2f6; }
 
 .switch-container input[type="checkbox"]:checked::after {
     left: 19px;
+}
+
+.fila-principal {
+    /* ... lo que ya tengas aquí ... */
+    flex-wrap: wrap; 
+}
+
+.barra-herramientas {
+    /* ... lo que ya tengas aquí ... */
+    flex-wrap: wrap; 
+}
+
+.filtros {
+    /* ... lo que ya tengas aquí ... */
+    flex-wrap: wrap; 
 }
